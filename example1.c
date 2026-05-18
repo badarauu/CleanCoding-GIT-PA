@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// Structura pentru un nod din lista de adiacenta / coada
+// Structura pentru un nod (folosita si pentru liste de adiacenta, si pentru coada)
 typedef struct Node {
     int data;
     struct Node *next;
@@ -16,7 +16,7 @@ typedef struct Graph {
 
 // --- FUNCTII UTILS ---
 
-// Aloca memorie pentru un nod nou
+// Creeaza un nod nou
 NODE *create_node(int v) {
     NODE *new_node = malloc(sizeof(NODE));
     new_node->data = v;
@@ -24,7 +24,7 @@ NODE *create_node(int v) {
     return new_node;
 }
 
-// Initializeaza graful cu liste goale si vectorul de vizitati cu 0
+// Initializeaza graful
 GPH *create_graph(int vertices) {
     GPH *graph = malloc(sizeof(GPH));
     graph->vertices = vertices;
@@ -38,14 +38,12 @@ GPH *create_graph(int vertices) {
     return graph;
 }
 
-// Adauga o muchie neorientata in graf
+// Adauga o muchie neorientata
 void add_edge(GPH *graph, int src, int dest) {
-    // Adauga dest in lista lui src
     NODE *new_node = create_node(dest);
     new_node->next = graph->adjacency_lists[src];
     graph->adjacency_lists[src] = new_node;
 
-    // Adauga src in lista lui dest (graf neorientat)
     new_node = create_node(src);
     new_node->next = graph->adjacency_lists[dest];
     graph->adjacency_lists[dest] = new_node;
@@ -62,13 +60,12 @@ void insedg(int nr_of_vertices, int nr_of_edges, GPH *graph) {
     }
 }
 
-// --- FUNCTII COADA (Pentru BFS) ---
+// --- FUNCTII COADA ---
 
 int is_empty(NODE *queue) {
     return queue == NULL;
 }
 
-// Adauga un element la sfarsitul cozii
 void enqueue(NODE **queue, int data) {
     NODE *new_node = create_node(data);
     if (is_empty(*queue)) {
@@ -82,7 +79,6 @@ void enqueue(NODE **queue, int data) {
     }
 }
 
-// Scoate un element de la inceputul cozii
 int dequeue(NODE **queue) {
     int data = (*queue)->data;
     NODE *temp = *queue;
@@ -91,19 +87,17 @@ int dequeue(NODE **queue) {
     return data;
 }
 
-// Reseteaza vectorul de vizitati intre parcurgeri
 void wipe_visited_list(GPH *graph, int nr_of_vertices) {
     for (int i = 0; i < nr_of_vertices; i++) {
         graph->visited[i] = 0;
     }
 }
 
-// --- PARCURGERI IN GRAF ---
+// --- PARCURGERI ---
 
-// Parcurgerea in Adancime (DFS) - Foloseste recursivitate
+// DFS (Adancime)
 void DFS(GPH *graph, int vertex_nr) {
     NODE *temp = graph->adjacency_lists[vertex_nr];
-
     graph->visited[vertex_nr] = 1;
     printf("%d ", vertex_nr);
 
@@ -116,10 +110,9 @@ void DFS(GPH *graph, int vertex_nr) {
     }
 }
 
-// Parcurgerea in Latime (BFS) - Foloseste o coada
+// BFS (Latime)
 void BFS(GPH *graph, int start) {
     NODE *queue = NULL;
-
     graph->visited[start] = 1;
     enqueue(&queue, start);
 
@@ -139,7 +132,7 @@ void BFS(GPH *graph, int start) {
     }
 }
 
-// --- FUNCTIA MAIN ---
+// --- MAIN ---
 int main() {
     int nr_of_vertices;
     int nr_of_edges;
@@ -160,7 +153,6 @@ int main() {
     DFS(graph, starting_vertex);
     printf("\n");
 
-    // Resetam istoricul vizitelor pentru a putea rula corect si BFS
     wipe_visited_list(graph, nr_of_vertices);
 
     printf("De unde plecam in BFS? ");
